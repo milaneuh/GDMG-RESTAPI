@@ -1,10 +1,10 @@
-package com.app.gdmg.model;
+package com.app.gdmg.entities;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "images")
-public class ImagesBean {
+public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long image_id;

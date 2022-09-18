@@ -1,12 +1,11 @@
-package com.app.gdmg.model;
+package com.app.gdmg.entities;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.util.Calendar;
 
 @Entity
 @Table(name = "fermetures")
-public class FermetureBean {
+public class FermetureEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long fermeture_id;
