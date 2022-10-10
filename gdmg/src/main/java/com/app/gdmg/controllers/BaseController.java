@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import java.security.Principal;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -23,6 +24,8 @@ public class BaseController {
     @Value("${reflectoring.trace:false}")
     private boolean printStackTrace;
     static Logger log = Logger.getLogger(BaseController.class.getName());
+
+
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
