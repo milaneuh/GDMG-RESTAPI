@@ -1,5 +1,7 @@
 package com.app.gdmg.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +17,7 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reservation_id;
 
+    private String code;
     private String origine;
     private int adulte;
     private int enfant;
@@ -22,13 +25,16 @@ public class ReservationEntity {
     private int animaux;
     private String precisionAnimaux;
     private String precisionEnfants;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateDebut;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateFin;
     private String adresse;
     private String complementAdresse;
     private String codePostal;
     private String ville;
     private String pays;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateCreation;
     private Float prixLocation;
     private Float taxeSejour;
@@ -247,5 +253,42 @@ public class ReservationEntity {
 
     public void setDateCreation(Date dateCreation) {
         this.dateCreation = dateCreation;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public ReservationEntity() {
+    }
+
+    public ReservationEntity(String code, String origine, int adulte, int enfant, int bebe, int animaux, String precisionAnimaux, String precisionEnfants, Date dateDebut, Date dateFin, String adresse, String complementAdresse, String codePostal, String ville, String pays, Date dateCreation, Float prixLocation, Float taxeSejour, Float prixMenage, Float prixChauffage, Float prixServiettes, Float montantRegle, Float resteAPercevoir) {
+        this.code = code;
+        this.origine = origine;
+        this.adulte = adulte;
+        this.enfant = enfant;
+        this.bebe = bebe;
+        this.animaux = animaux;
+        this.precisionAnimaux = precisionAnimaux;
+        this.precisionEnfants = precisionEnfants;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
+        this.adresse = adresse;
+        this.complementAdresse = complementAdresse;
+        this.codePostal = codePostal;
+        this.ville = ville;
+        this.pays = pays;
+        this.dateCreation = dateCreation;
+        this.prixLocation = prixLocation;
+        this.taxeSejour = taxeSejour;
+        this.prixMenage = prixMenage;
+        this.prixChauffage = prixChauffage;
+        this.prixServiettes = prixServiettes;
+        this.montantRegle = montantRegle;
+        this.resteAPercevoir = resteAPercevoir;
     }
 }

@@ -24,8 +24,6 @@ public class UtilisateurEntity {
     @JoinColumn(name = "role_id")
     private RolesEntity role;
 
-    @OneToMany(mappedBy = "client")
-    private List<ReservationEntity> reservations;
 
     public long getUtilisateurId() {
         return utilisateurId;
@@ -107,13 +105,7 @@ public class UtilisateurEntity {
         this.role = role;
     }
 
-    public List<ReservationEntity> getReservations() {
-        return reservations;
-    }
 
-    public void setReservations(List<ReservationEntity> reservations) {
-        this.reservations = reservations;
-    }
 
     public UtilisateurEntity(String password, String mail, String civilite, String nom, String prenom, Boolean newsletter, String telephone, String telephone2, RolesEntity role) {
 

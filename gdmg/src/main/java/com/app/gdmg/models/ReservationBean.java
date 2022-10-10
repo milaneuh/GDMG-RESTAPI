@@ -1,25 +1,30 @@
 package com.app.gdmg.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Calendar;
 import java.util.Date;
 
 public class ReservationBean {
-
-    private Date origine;
+    private String code;
+    private String origine;
     private int adulte;
     private int enfant;
     private int bebe;
     private int animaux;
     private String precisionAnimaux;
     private String precisionEnfants;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateDebut;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date dateFin;
     private String adresse;
     private String complementAdresse;
     private String codePostal;
     private String ville;
     private String pays;
-    private Calendar dateCreation;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date dateCreation;
     private Float prixLocation;
     private Float taxeSejour;
     private Float prixMenage;
@@ -30,7 +35,7 @@ public class ReservationBean {
     private String codeStatus;
     private String clientMail;
 
-    public ReservationBean(Date origine, int adulte, int enfant, int bebe, int animaux, String precisionAnimaux, String precisionEnfants, Date dateDebut, Date dateFin, String adresse, String complementAdresse, String codePostal, String ville, String pays, Calendar dateCreation, Float prixLocation, Float taxeSejour, Float prixMenage, Float prixChauffage, Float prixServiettes, Float montantRegle, Float resteAPercevoir, String codeStatus, String clientMail) {
+    public ReservationBean(String origine, int adulte, int enfant, int bebe, int animaux, String precisionAnimaux, String precisionEnfants, Date dateDebut, Date dateFin, String adresse, String complementAdresse, String codePostal, String ville, String pays, Date dateCreation, Float prixLocation, Float taxeSejour, Float prixMenage, Float prixChauffage, Float prixServiettes, Float montantRegle, Float resteAPercevoir, String codeStatus, String clientMail) {
         this.origine = origine;
         this.adulte = adulte;
         this.enfant = enfant;
@@ -65,11 +70,11 @@ public class ReservationBean {
         this.clientMail = clientMail;
     }
 
-    public Date getOrigine() {
+    public String getOrigine() {
         return origine;
     }
 
-    public void setOrigine(Date origine) {
+    public void setOrigine(String origine) {
         this.origine = origine;
     }
 
@@ -177,11 +182,11 @@ public class ReservationBean {
         this.pays = pays;
     }
 
-    public Calendar getDateCreation() {
+    public Date getDateCreation() {
         return dateCreation;
     }
 
-    public void setDateCreation(Calendar dateCreation) {
+    public void setDateCreation(Date dateCreation) {
         this.dateCreation = dateCreation;
     }
 
@@ -247,5 +252,13 @@ public class ReservationBean {
 
     public void setCodeStatus(String codeStatus) {
         this.codeStatus = codeStatus;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

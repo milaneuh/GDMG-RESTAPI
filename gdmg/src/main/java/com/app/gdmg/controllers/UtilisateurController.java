@@ -18,8 +18,8 @@ public class UtilisateurController extends BaseController {
     private final UtilisateurService utilisateurService;
 
     @GetMapping("/getAllUsers")
-    public ResponseEntity getAllUsers(){
-        return ResponseEntity.ok().body(utilisateurService.getAllUsers());
+    public ResponseEntity<List<UtilisateurEntity>> getAllUsers(){
+        return utilisateurService.getAllUsers();
     }
 
     @GetMapping("/getUser")

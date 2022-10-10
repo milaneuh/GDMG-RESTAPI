@@ -3,12 +3,13 @@ package com.app.gdmg.servicesimpl;
 import com.app.gdmg.models.UtilisateurBean;
 import com.app.gdmg.entities.RolesEntity;
 import com.app.gdmg.entities.UtilisateurEntity;
-import com.app.gdmg.repository.RolesEntityRepository;
-import com.app.gdmg.repository.UtilisateursEntityRepository;
+import com.app.gdmg.repositories.RolesEntityRepository;
+import com.app.gdmg.repositories.UtilisateursEntityRepository;
 import com.app.gdmg.services.UtilisateurService;
 import com.app.gdmg.utils.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
@@ -29,30 +30,27 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public ResponseEntity saveUser(UtilisateurBean user) throws Exception {
         log.log(Level.INFO,"saveUser(), User to save : "+user.toString());
-        try {
             if (StringUtils.validateEmail(user.getMail())){
                 if (StringUtils.validatePassword(user.getPassword())){
                     if (utilisateursEntityRepository.findByMail(user.getMail()) == null){
+                        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
                         UtilisateurEntity userToSave = userToUserEntity(user);
                         userToSave.setRole(rolesEntityRepository.findByCode(user.getRole()));
                         utilisateursEntityRepository.save(userToSave);
-                        return  new ResponseEntity(utilisateursEntityRepository.findByMail(user.getMail()), HttpStatus.OK);
+                        return ResponseEntity.ok().body(utilisateursEntityRepository.findByMail(user.getMail()));
                     }else {
-                        log.info("The mail is already");
-                        throw new Exception("The mail is already used");
+                        log.info("The mail "+user.getMail()+" is already used");
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body("The mail is alredy used");
                     }
 
                 }else {
                     log.info("The password is invalid");
-                    throw new Exception("The password is invalid");
+                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The password is invalid");
                 }
             }else {
                 log.info("The mail is invalid");
-                throw new Exception("The mail is invalid");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The mail is invalid");
             }
-        }catch (Exception event){
-            throw new Exception(event);
-        }
     }
 
     @Override
@@ -62,9 +60,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             UtilisateurEntity userToDelete = utilisateursEntityRepository.findByMail(utilisateurBean.getMail());
             if (userToDelete != null){
                 utilisateursEntityRepository.delete(userToDelete);
-                return new ResponseEntity("OK",HttpStatus.OK);
+                return ResponseEntity.ok().body("OK");
             }else {
-                throw new Exception("L'utilisateur n'existe pas");
+                return ResponseEntity.notFound().build();
             }
     }
 
@@ -72,39 +70,37 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     public ResponseEntity updateUser(UtilisateurBean user) throws Exception {
         log.log(Level.INFO,"updateUser(), User to update"+user.toString());
 
-        try {
             UtilisateurEntity userToUpdate = utilisateursEntityRepository.findByMail(user.getMail());
-            userToUpdate.setMail(user.getMail());
-            userToUpdate.setNom(user.getNom());
-            userToUpdate.setPrenom(user.getPrenom());
-            userToUpdate.setPassword(user.getPassword());
-            userToUpdate.setCivilite(user.getCivilite());
-            userToUpdate.setTelephone(user.getTelephone());
-            userToUpdate.setTelephone2(user.getTelephone2());
-            utilisateursEntityRepository.save(userToUpdate);
-
-            return new ResponseEntity(utilisateursEntityRepository.findByMail(user.getMail()),HttpStatus.OK);
-        }catch (Exception event){
-            event.printStackTrace();
-            throw new Exception(event.getMessage());
-        }
+            if (userToUpdate != null){
+                userToUpdate.setMail(user.getMail());
+                userToUpdate.setNom(user.getNom());
+                userToUpdate.setPrenom(user.getPrenom());
+                userToUpdate.setPassword(user.getPassword());
+                userToUpdate.setCivilite(user.getCivilite());
+                userToUpdate.setTelephone(user.getTelephone());
+                userToUpdate.setTelephone2(user.getTelephone2());
+                utilisateursEntityRepository.save(userToUpdate);
+                return ResponseEntity.ok().body(utilisateursEntityRepository.findByMail(user.getMail()));
+            }else {
+                log.info("L'utilisateur n'existe pas");
+                return ResponseEntity.notFound().build();
+            }
     }
 
     @Override
     public ResponseEntity getUser(String mail ) throws Exception {
-        log.log(Level.INFO,"getUser(), getting a user with the mail :"+mail);
-        UtilisateurEntity utilisateurEntity =  utilisateursEntityRepository.findByMail(mail);
-        if(utilisateurEntity != null){
-            return new ResponseEntity(utilisateurEntity,HttpStatus.OK);
-        }
-       else {
-           throw new Exception("L'utilisateur ayant comme mail : "+mail+" n'existe pas");
+        UtilisateurEntity utilisateurEntity = utilisateursEntityRepository.findByMail(mail);
+        if(utilisateurEntity!= null){
+            return ResponseEntity.ok().body(utilisateurEntity);
+        }else {
+            log.info("L'utilisateur n'existe pas");
+            return ResponseEntity.notFound().build();
         }
     }
 
     @Override
-    public ResponseEntity getAllUsers() {
-       return new ResponseEntity(utilisateursEntityRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<UtilisateurEntity>> getAllUsers() {
+       return ResponseEntity.ok().body(utilisateursEntityRepository.findAll());
     }
 
     @Override
@@ -181,4 +177,6 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         this.utilisateursEntityRepository = utilisateursEntityRepository;
         this.rolesEntityRepository = rolesEntityRepository;
     }
+
+
 }

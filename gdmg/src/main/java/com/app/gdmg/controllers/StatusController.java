@@ -28,7 +28,7 @@ public class StatusController extends BaseController{
     }
 
     @GetMapping(path = "/getStatus")
-    public ResponseEntity getStatus(@RequestParam String code){
+    public ResponseEntity getStatus(@RequestParam String code) throws Exception {
         log.log(Level.INFO, "/getStauts() "+"code : "+code);
         return  statusService.getStatus(code);
     }

@@ -1,4 +1,4 @@
-package com.app.gdmg.repository;
+package com.app.gdmg.repositories;
 
 import com.app.gdmg.entities.ReservationEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

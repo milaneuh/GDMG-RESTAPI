@@ -10,7 +10,7 @@ public interface StatusService {
     ResponseEntity saveStatus(StatusBean status);
     ResponseEntity updateStatus(StatusBean status) throws Exception;
     ResponseEntity deleteStatus(StatusBean status) throws Exception;
-    ResponseEntity getStatus(String code);
+    ResponseEntity getStatus(String code) throws Exception;
     ResponseEntity getAllStatus();
     StatusEntity statusBeanToStatusEntity(StatusBean status);
     StatusBean statusEntityToStatusBean(StatusEntity status);

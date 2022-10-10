@@ -11,7 +11,7 @@ public interface UtilisateurService {
     ResponseEntity deleteUser(UtilisateurBean utilisateurBean) throws Exception;
     ResponseEntity updateUser(UtilisateurBean user) throws Exception;
     ResponseEntity getUser(String mail) throws Exception;
-    ResponseEntity getAllUsers();
+    ResponseEntity<List<UtilisateurEntity>> getAllUsers();
 
     ResponseEntity addRoleToUser(UtilisateurBean user, String roleCode) throws Exception;
 

@@ -2,7 +2,7 @@ package com.app.gdmg.servicesimpl;
 
 import com.app.gdmg.entities.StatusEntity;
 import com.app.gdmg.models.StatusBean;
-import com.app.gdmg.repository.StatusEntityRepository;
+import com.app.gdmg.repositories.StatusEntityRepository;
 import com.app.gdmg.services.StatusService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +21,20 @@ public class SatusServiceImpl implements StatusService {
     public ResponseEntity saveStatus(StatusBean status) {
         StatusEntity statusEntity = statusBeanToStatusEntity(status);
         statusEntityRepository.save(statusEntity);
-        return new ResponseEntity(statusEntityRepository.findByCode(statusEntity.getCode()),HttpStatus.OK) ;
+        return ResponseEntity.ok().body(statusEntityRepository.findByCode(statusEntity.getCode()));
     }
 
     @Override
     public ResponseEntity updateStatus(StatusBean status) throws Exception {
-        try {
             StatusEntity statusEntity = statusEntityRepository.findByCode(status.getCode());
-            statusEntity.setLabel(status.getLabel());
-            statusEntityRepository.save(statusEntity);
-            return new ResponseEntity(statusEntityRepository.findByCode(statusEntity.getCode()),HttpStatus.OK) ;
-        }catch (Exception e){
-            throw  new Exception(e);
-        }
-
+            if (statusEntity != null){
+                statusEntity.setLabel(status.getLabel());
+                statusEntityRepository.save(statusEntity);
+                return ResponseEntity.ok().body(statusEntityRepository.findByCode(statusEntity.getCode()));
+            }else {
+                log.info("Le status '"+status.getLabel()+"' n'existe pas");
+                return ResponseEntity.notFound().build();
+            }
     }
 
     @Override
@@ -44,26 +44,28 @@ public class SatusServiceImpl implements StatusService {
         if(statusEntity != null) {
             statusEntityRepository.delete(statusEntity);
             StatusEntity result = statusEntityRepository.findByCode(status.getCode());
-            return new ResponseEntity(result, HttpStatus.OK);
+            return ResponseEntity.ok().body(result);
         }else {
-            log.info(String.valueOf(statusEntity));
-            throw new Exception("Ce staus n'existe pas");
+            log.info("Le status '"+status.getLabel()+"' n'existe pas");
+            return ResponseEntity.notFound().build();
         }
     }
 
     @Override
-    public ResponseEntity getStatus(String code) {
+    public ResponseEntity getStatus(String code) throws Exception {
         StatusEntity statusEntity = statusEntityRepository.findByCode(code);
-        if(statusEntity != null) {
-            return new ResponseEntity(statusEntity, HttpStatus.OK);
+        if(statusEntity != null){
+            return ResponseEntity.ok().body(statusEntity);
+        }else {
+            log.info("Le status '"+code+"' n'existe pas");
+            return ResponseEntity.notFound().build();
         }
-        return new ResponseEntity("Il n'existe pas de status correspondants dans la bdd", HttpStatus.NOT_FOUND);
     }
 
     @Override
     public ResponseEntity getAllStatus() {
         List<StatusEntity> statusEntityList = statusEntityRepository.findAll();
-        return new ResponseEntity(statusEntityList, HttpStatus.OK);
+        return ResponseEntity.ok().body(statusEntityList);
     }
 
     @Override

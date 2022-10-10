@@ -1,9 +1,8 @@
 package com.app.gdmg.servicesimpl;
 
-import com.app.gdmg.entities.StatusEntity;
 import com.app.gdmg.models.RoleBean;
 import com.app.gdmg.entities.RolesEntity;
-import com.app.gdmg.repository.RolesEntityRepository;
+import com.app.gdmg.repositories.RolesEntityRepository;
 import com.app.gdmg.services.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,25 +23,25 @@ public class RoleServiceImpl implements RoleService {
 
 
     @Override
-    public ResponseEntity saveRole(RoleBean role) {
+    public ResponseEntity<RolesEntity> saveRole(RoleBean role) {
         RolesEntity rolesEntity = roleToDbRole(role);
         rolesEntityRepository.save(rolesEntity);
-        return new ResponseEntity(listDbRoleToListRole(rolesEntityRepository.findAll()), HttpStatus.OK) ;
+        return  ResponseEntity.ok().body(rolesEntityRepository.findByCode(role.getCode()));
     }
 
     @Override
-    public List<RolesEntity> getAllRoles() {
-        return rolesEntityRepository.findAll();
+    public ResponseEntity<List<RolesEntity>> getAllRoles() {
+        return ResponseEntity.ok().body(rolesEntityRepository.findAll());
     }
 
     @Override
     public ResponseEntity getRole(String code) throws Exception {
         RolesEntity rolesEntity = rolesEntityRepository.findByCode(code);
         if(rolesEntity != null){
-            return new ResponseEntity(rolesEntity,HttpStatus.OK);
+            return ResponseEntity.ok().body(rolesEntity);
         }else {
-            log.info(String.valueOf(rolesEntity));
-            throw new Exception("Ce role n'existe pas");
+            log.info("Le role "+code+" n'existe pas");
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -51,23 +50,24 @@ public class RoleServiceImpl implements RoleService {
         RolesEntity rolesEntity = rolesEntityRepository.findByCode(role.getCode());
         if(rolesEntity != null){
             rolesEntityRepository.deleteById(rolesEntity.getRoleId());
-            return new ResponseEntity("OK",HttpStatus.OK);
+            return  ResponseEntity.ok().body("Le role a bien été supprimé");
         }else {
-            log.info(String.valueOf(rolesEntity));
-            throw new Exception("Ce role n'existe pas");
+            log.info("Le role "+role.getCode()+" n'existe pas");
+            return ResponseEntity.notFound().build();
         }
     }
 
     @Override
     public ResponseEntity updateRole(RoleBean role) throws Exception {
-        try {
             RolesEntity rolesEntity = rolesEntityRepository.findByCode(role.getCode());
-            rolesEntity.setLabel(role.getLabel());
-            rolesEntityRepository.save(rolesEntity);
-            return new ResponseEntity(rolesEntityRepository.findByCode(rolesEntity.getCode()),HttpStatus.OK) ;
-        }catch (Exception e){
-            throw  new Exception(e);
-        }
+            if (rolesEntity != null){
+                rolesEntity.setLabel(role.getLabel());
+                rolesEntityRepository.save(rolesEntity);
+                return ResponseEntity.ok().body(rolesEntityRepository.findByCode(rolesEntity.getCode())) ;
+            }else {
+                log.info("Le role " + role.getCode() + " n'existe pas");
+                return ResponseEntity.notFound().build();
+            }
     }
 
     @Override

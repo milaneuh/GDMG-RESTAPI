@@ -9,7 +9,7 @@ import java.util.List;
 public interface RoleService {
 
     ResponseEntity saveRole(RoleBean role);
-    List<RolesEntity> getAllRoles();
+    ResponseEntity<List<RolesEntity>> getAllRoles();
 
     ResponseEntity getRole(String code) throws Exception;
 

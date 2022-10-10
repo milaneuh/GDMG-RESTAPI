@@ -24,7 +24,7 @@ public class RoleController extends BaseController{
     @GetMapping("/getAllRoles")
     public ResponseEntity<List<RolesEntity>> getAllRoles(){
         log.log(Level.INFO, "/getAllRoles()");
-        return ResponseEntity.ok().body(roleService.getAllRoles());
+        return roleService.getAllRoles();
     }
 
     @GetMapping("/getRole")
