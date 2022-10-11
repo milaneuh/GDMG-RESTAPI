@@ -1,5 +1,6 @@
 package com.app.gdmg.servicesimpl;
 
+import com.app.gdmg.models.RoleBean;
 import com.app.gdmg.models.UtilisateurBean;
 import com.app.gdmg.entities.RolesEntity;
 import com.app.gdmg.entities.UtilisateurEntity;
@@ -10,18 +11,20 @@ import com.app.gdmg.utils.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service @Transactional
 public class UtilisateurServiceImpl implements UtilisateurService {
-
+    private final PasswordEncoder passwordEncoder;
     private final UtilisateursEntityRepository utilisateursEntityRepository;
     private  final RolesEntityRepository rolesEntityRepository;
 
@@ -32,21 +35,20 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         log.log(Level.INFO,"saveUser(), User to save : "+user.toString());
             if (StringUtils.validateEmail(user.getMail())){
                 if (StringUtils.validatePassword(user.getPassword())){
-                    if (utilisateursEntityRepository.findByMail(user.getMail()) == null){
-                        user.setPassword(BCrypt.hashpw(user.getPassword(),BCrypt.gensalt()));
-                        UtilisateurEntity userToSave = userToUserEntity(user);
-                        userToSave.setRole(rolesEntityRepository.findByCode(user.getRole()));
-                        utilisateursEntityRepository.save(userToSave);
-                        return ResponseEntity.ok().body(utilisateursEntityRepository.findByMail(user.getMail()));
+                        if (utilisateursEntityRepository.findByMail(user.getMail()) == null){
+                            user.setPassword(passwordEncoder.encode(user.getPassword()));
+                            UtilisateurEntity userToSave = userToUserEntity(user);
+                            userToSave.setRole(rolesEntityRepository.findByCode(user.getRole()));
+                            utilisateursEntityRepository.save(userToSave);
+                            return ResponseEntity.ok().body(utilisateursEntityRepository.findByMail(user.getMail()));
+                        }else {
+                            log.info("The mail "+user.getMail()+" is already used");
+                            return ResponseEntity.status(HttpStatus.CONFLICT).body("The mail is alredy used");
+                        }
                     }else {
-                        log.info("The mail "+user.getMail()+" is already used");
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body("The mail is alredy used");
+                        log.info("The password is invalid or do not exists");
+                        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(user.getPassword());
                     }
-
-                }else {
-                    log.info("The password is invalid");
-                    return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The password is invalid");
-                }
             }else {
                 log.info("The mail is invalid");
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The mail is invalid");
@@ -173,10 +175,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         return usersToReturn;
     }
 
-    public UtilisateurServiceImpl(UtilisateursEntityRepository utilisateursEntityRepository, RolesEntityRepository rolesEntityRepository) {
-        this.utilisateursEntityRepository = utilisateursEntityRepository;
-        this.rolesEntityRepository = rolesEntityRepository;
+    public Boolean validateRole(Collection<RoleBean> roles){
+        Collection<RolesEntity> rolesEntityCollection = new ArrayList<>();
+        roles.forEach((roleBean -> rolesEntityCollection.add(rolesEntityRepository.findByCode(roleBean.getCode()))));
+        if (roles.isEmpty() || rolesEntityCollection.isEmpty()){
+            return false;
+        }else return true;
     }
+    public UtilisateurServiceImpl(PasswordEncoder passwordEncoder, UtilisateursEntityRepository utilisateursEntityRepository, RolesEntityRepository rolesEntityRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.utilisateursEntityRepository = utilisateursEntityRepository;
+            this.rolesEntityRepository = rolesEntityRepository;
+        }
 
 
-}
+    }

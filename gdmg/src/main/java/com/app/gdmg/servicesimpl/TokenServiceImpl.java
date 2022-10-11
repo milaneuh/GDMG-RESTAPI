@@ -21,6 +21,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     public String generateToken(Authentication authentication) {
+        System.out.println("generateToken("+authentication+")");
         Instant now = Instant.now();
         String scope = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

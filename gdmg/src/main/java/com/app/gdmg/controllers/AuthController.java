@@ -27,7 +27,9 @@ public class AuthController {
 
     @PostMapping("/token")
     public String token(@RequestBody LoginRequestBean userLogin) throws AuthenticationException {
+        LOG.info("User trying to login : "+userLogin.getMail()+userLogin.getPassword());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getMail(), userLogin.getPassword()));
+        LOG.info("Authentification generated : "+authentication.getPrincipal(),authentication.getCredentials());
         return tokenService.generateToken(authentication);
     }
 
