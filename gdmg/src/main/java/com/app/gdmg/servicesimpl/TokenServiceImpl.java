@@ -14,13 +14,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class TokenServiceImpl implements TokenService {
-    private final JwtEncoder jwtEncoder;
+    private final JwtEncoder encoder;
 
-    public TokenServiceImpl(JwtEncoder jwtEncoder) {
-        this.jwtEncoder = jwtEncoder;
+    public TokenServiceImpl(JwtEncoder encoder) {
+        this.encoder = encoder;
     }
 
-    @Override
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
         String scope = authentication.getAuthorities().stream()
@@ -29,10 +28,11 @@ public class TokenServiceImpl implements TokenService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.HALF_DAYS))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
-        return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
+
 }
