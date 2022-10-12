@@ -25,8 +25,13 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public ResponseEntity<RolesEntity> saveRole(RoleBean role) {
         RolesEntity rolesEntity = roleToDbRole(role);
-        rolesEntityRepository.save(rolesEntity);
-        return  ResponseEntity.ok().body(rolesEntityRepository.findByCode(role.getCode()));
+        RolesEntity roleVerify = rolesEntityRepository.findByCode(role.getCode());
+        if (roleVerify == null){
+            rolesEntityRepository.save(rolesEntity);
+            return  ResponseEntity.ok().body(rolesEntityRepository.findByCode(role.getCode()));
+        }else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     @Override

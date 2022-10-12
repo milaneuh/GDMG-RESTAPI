@@ -8,11 +8,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
+@CrossOrigin
 public class AuthController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthController.class);
@@ -25,6 +25,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
     }
 
+    @CrossOrigin
     @PostMapping("/token")
     public String token(@RequestBody LoginRequestBean userLogin) throws AuthenticationException {
         LOG.info("User trying to login : "+userLogin.getMail()+userLogin.getPassword());
